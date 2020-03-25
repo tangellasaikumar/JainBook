@@ -8,7 +8,7 @@ Background:
 	
 Scenario: ValidSign_upDetails 
 
-	When I enter <validmailId> as '22001155@gmail.com' ,I enter <repeatEmailAddress> as '22001155@gmail.com', I enter <validpassword> as '12345678' and I enter <Repeat Password> as '12345678' 
+	When I enter <validmailId> as '220001155@gmail.com' ,I enter <repeatEmailAddress> as '220001155@gmail.com', I enter <validpassword> as '12345678' and I enter <Repeat Password> as '12345678' 
 	Then I should create an account successfully. 
 	
 	

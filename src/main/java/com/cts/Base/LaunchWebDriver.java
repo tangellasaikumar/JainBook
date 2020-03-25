@@ -11,7 +11,7 @@ import io.cucumber.java.Before;
 
 public class LaunchWebDriver {
 
-	public WebDriver driver;
+	public static WebDriver driver;
 
 	//opening the URL in Browser
 	public static void setup(WebDriver driver) {
@@ -22,9 +22,10 @@ public class LaunchWebDriver {
 		driver.get("https://www.jainbookagency.com/india-largest-online-book-store.aspx");
 	}
 
-	public void tearDown() throws InterruptedException {
+	public static void tearDown() throws InterruptedException {
 
 		driver.quit();
+		
 	}
-
+	
 }

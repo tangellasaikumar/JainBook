@@ -46,8 +46,9 @@ public class stepDefinitions {
 	}
 
 	@Then("I should create an account successfully.")
-	public void i_should_create_an_account_successfully() {
+	public void i_should_create_an_account_successfully() throws InterruptedException {
 		HomePage.signinMessage(driver);
+		LaunchWebDriver.tearDown();
 	}
 
 	@When("I enter <invalidmailId> as {string} ,I enter <repeatEmailAddress> as {string}, I enter <password> as {string} and I enter <Repeat Password> as {string}")
