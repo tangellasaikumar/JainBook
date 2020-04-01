@@ -1,12 +1,12 @@
 package com.cts.stepdefinitions;
 
-import java.util.concurrent.TimeUnit;
-
+import java.io.IOException;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import com.cts.Base.LaunchWebDriver;
+import com.cts.base.LaunchWebBrowser;
 import com.cts.pages.HomePage;
+import com.cts.utils.ReadExcel;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -17,87 +17,103 @@ public class stepDefinitions {
 	@Given("I have browser with  JainBookAgencyPage")
 	public void i_have_browser_with_JainBookAgencyPage() {
 
-		System.setProperty("webdriver.chrome.driver", "src/test/resources/Driver/chromedriver.exe");
-		driver = new ChromeDriver();
-		driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		driver.get("https://www.jainbookagency.com/india-largest-online-book-store.aspx");
+		//launch webdriver
+				LaunchWebBrowser.LaunchWebDriver("ch");
+				this.driver = LaunchWebBrowser.driver;
 	}
 
-	@When("I enter <validmailId> as {string} ,I enter <repeatEmailAddress> as {string}, I enter <validpassword> as {string} and I enter <Repeat Password> as {string}")
-	public void i_enter_validmailId_as_I_enter_repeatEmailAddress_as_I_enter_validpassword_as_and_I_enter_Repeat_Password_as(
-			String mail, String mailid1, String password, String password1) throws InterruptedException {
+@When("I enter details from excel {string} with sheet name {string}")
+public void i_enter_details_from_excel_with_sheet_name(String filedetails, String sheetname) throws InterruptedException, IOException {
+	
+	String str[][] = ReadExcel.getSheetIntoStringArray("src/test/resources/excel/jain books.xlsx","sign up");
+	
+	HomePage login = new HomePage(driver);
+	
+	login.ClickOnLogin();
 
-		HomePage.ClickOnLogin(driver);
-
-		HomePage.ClickOnSignUp(driver);
+	login.ClickOnSignUp();
 
 		Thread.sleep(1000);
 
-		HomePage.enterEmailId(driver, mail);
+		login.enterEmailId(str[0][0]);
 
-		HomePage.enterPassword(driver, password);
+		login.enterPassword(str[0][2]);
 
-		HomePage.reEnterEmailId(driver, mailid1);
+		login.reEnterEmailId(str[0][1]);
 
-		HomePage.reEnterPassword(driver, password1);
+		login.reEnterPassword(str[0][3]);
 
-		HomePage.ClickOnSignUpNow(driver);
+		login.ClickOnSignUpNow();
 	}
 
 	@Then("I should create an account successfully.")
 	public void i_should_create_an_account_successfully() throws InterruptedException {
-		HomePage.signinMessage(driver);
-		LaunchWebDriver.tearDown();
+		HomePage login = new HomePage(driver);
+		login.signinMessage();
+		LaunchWebBrowser.exit();
 	}
 
-	@When("I enter <invalidmailId> as {string} ,I enter <repeatEmailAddress> as {string}, I enter <password> as {string} and I enter <Repeat Password> as {string}")
-	public void i_enter_invalidmailId_as_I_enter_repeatEmailAddress_as_I_enter_password_as_and_I_enter_Repeat_Password_as(
-			String userName1, String password1, String mailid11, String password11) {
+@When("I enter  invalid details from excel {string} with sheet name {string}")
+public void i_enter_invalid_details_from_excel_with_sheet_name(String filedetails, String sheetname) throws IOException {
 
-		HomePage.ClickOnLogin(driver);
+	String str[][] = ReadExcel.getSheetIntoStringArray("src/test/resources/excel/jain books.xlsx","invalid sign up");
+	
+	HomePage login = new HomePage(driver);
 
-		HomePage.ClickOnSignUp(driver);
+	login.ClickOnLogin();
 
-		HomePage.enterEmailId(driver, userName1);
+	login.ClickOnSignUp();
 
-		HomePage.enterPassword(driver, password1);
+	login.enterEmailId(str[0][0]);
 
-		HomePage.reEnterEmailId(driver, mailid11);
+	login.enterPassword(str[0][0]);
 
-		HomePage.reEnterPassword(driver, password11);
+	login.reEnterEmailId(str[0][0]);
 
-		HomePage.ClickOnSignUpNow(driver);
+	login.reEnterPassword(str[0][0]);
+
+	login.ClickOnSignUpNow();
 
 	}
 
 	@Then("I should get a error message")
 	public void i_should_get_a_error_message() {
-		HomePage.invalidMessage(driver);
+		HomePage login = new HomePage(driver);
+		login.invalidMessage();
 	}
 
-	@When("I enter <mailId> as {string} ,I enter <validpassword> as {string}")
-	public void i_enter_mailId_as_I_enter_validpassword_as(String email, String password) {
-		HomePage.ClickOnLogin(driver);
-		HomePage.enteringLoginEmail(driver, email);
-		HomePage.enteringLoginPassword(driver, password);
-		HomePage.clickingValidLogin(driver);
+
+@When("I enter valid details from excel {string} with sheet name {string}")
+public void i_enter_valid_details_from_excel_with_sheet_name(String filedetails, String sheetname) throws IOException {
+	String str[][] = ReadExcel.getSheetIntoStringArray("src/test/resources/excel/jain books.xlsx","valid login");
+	
+	HomePage login = new HomePage(driver);
+	
+	login.ClickOnLogin();
+	login.enteringLoginEmail(str[0][0]);
+	login.enteringLoginPassword(str[0][1]);
+	login.clickingValidLogin();
 
 	}
 
 	@Then("I should login successfully and  search for books.")
 	public void i_should_login_successfully_and_search_for_books() {
+		
 		String expectedTitle = "India's Largest Online Book Store";
 		String actualTitle = driver.getTitle().trim();
 		Assert.assertEquals("Assertion Failed", expectedTitle, actualTitle);
 	}
 
-	@When("I enter <invalidmailId> as {string} , I enter <password> as {string}")
-	public void i_enter_invalidmailId_as_I_enter_password_as(String email, String password) {
-		HomePage.ClickOnLogin(driver);
-		HomePage.enteringLoginEmail(driver, email);
-		HomePage.enteringLoginPassword(driver, password);
-		HomePage.clickingValidLogin(driver);
+	@When("I enter invalid details from excel {string} with sheet name {string}")
+	public void i_enter_invalid_mail_from_excel_with_sheet_name(String filedetails, String sheetname) throws IOException {
+		String str[][] = ReadExcel.getSheetIntoStringArray("src/test/resources/excel/jain books.xlsx","invalid login");
+		
+		HomePage login = new HomePage(driver);
+		
+		login.ClickOnLogin();
+		login.enteringLoginEmail(str[0][0]);
+		login.enteringLoginPassword(str[0][1]);
+		login.clickingValidLogin();
 	}
 
 	@Then("I should get a invalid mailId message displayed as {string}")
@@ -106,12 +122,16 @@ public class stepDefinitions {
 		Assert.assertEquals("Assertion Failed", expectedText, actualText);
 	}
 
-	@When("I enter <mailId> as {string} , I enter <invalidpassword> as {string}")
-	public void i_enter_mailId_as_I_enter_invalidpassword_as(String email, String password) {
-		HomePage.ClickOnLogin(driver);
-		HomePage.enteringLoginEmail(driver, email);
-		HomePage.enteringLoginPassword(driver, password);
-		HomePage.clickingValidLogin(driver);
+	@When("I enter invalid details from excel {string} with sheet name {string}")
+	public void i_enter_invalid_password_from_excel_with_sheet_name(String filedetails, String sheetname) throws IOException {
+		String str[][] = ReadExcel.getSheetIntoStringArray("src/test/resources/excel/jain books.xlsx","invalid login");
+		
+		HomePage login = new HomePage(driver);
+		
+		login.ClickOnLogin();
+		login.enteringLoginEmail(str[1][0]);
+		login.enteringLoginPassword(str[1][1]);
+		login.clickingValidLogin();
 	}
 
 	@Then("I should get a inValid password  message displayed as {string}")
